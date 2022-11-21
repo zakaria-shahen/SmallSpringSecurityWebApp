@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity(debug = true)
 public class SecurityConfiguration {
@@ -18,12 +19,12 @@ public class SecurityConfiguration {
 
     @Bean
     public DefaultSecurityFilterChain configSecurity
-            (HttpSecurity httpSecurity, CustomAuthenticationProvider customAuthenticationProvider) throws Exception {
+            (HttpSecurity httpSecurity, CustomAuthenticationProvider customAuthenticationProvider, SendEmailAfterLoginFilter sendEmailAfterLoginFilter) throws Exception {
 
          httpSecurity.httpBasic()
                  .and().authorizeHttpRequests().anyRequest()
-                 .hasAnyRole("USER", "ADMIN");
-
+                 .hasAnyRole("USER", "ADMIN")
+                 .and().addFilterAfter(sendEmailAfterLoginFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
