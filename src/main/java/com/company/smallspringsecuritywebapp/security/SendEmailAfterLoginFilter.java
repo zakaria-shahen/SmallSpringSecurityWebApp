@@ -1,5 +1,8 @@
 package com.company.smallspringsecuritywebapp.security;
 
+import com.company.smallspringsecuritywebapp.model.User;
+import com.company.smallspringsecuritywebapp.unils.OnLoginEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -12,10 +15,16 @@ import java.io.IOException;
 @Component
 public class SendEmailAfterLoginFilter extends OncePerRequestFilter {
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public SendEmailAfterLoginFilter(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        logger.info("User logged in");
+        applicationEventPublisher.publishEvent(new OnLoginEvent(User.builder().build()));
 
         filterChain.doFilter(request, response);
 
