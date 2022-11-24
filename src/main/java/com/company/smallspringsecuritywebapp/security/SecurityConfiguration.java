@@ -18,13 +18,18 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DefaultSecurityFilterChain configSecurity
-            (HttpSecurity httpSecurity, CustomAuthenticationProvider customAuthenticationProvider, SendEmailAfterLoginFilter sendEmailAfterLoginFilter) throws Exception {
+    public DefaultSecurityFilterChain configSecurity(
+            HttpSecurity httpSecurity,
+            CustomAuthenticationProvider customAuthenticationProvider,
+            SendEmailAfterLoginFilter sendEmailAfterLoginFilter,
+            CustomCsrfTokenRepository csrfTokenRepository) throws Exception {
 
          httpSecurity.httpBasic()
                  .and().authorizeHttpRequests().anyRequest()
                  .hasAnyRole("USER", "ADMIN")
-                 .and().addFilterAfter(sendEmailAfterLoginFilter, UsernamePasswordAuthenticationFilter.class);
+                 .and().addFilterAfter(sendEmailAfterLoginFilter, UsernamePasswordAuthenticationFilter.class)
+                 .csrf(c -> c.csrfTokenRepository(csrfTokenRepository));
+
         return httpSecurity.build();
     }
 
